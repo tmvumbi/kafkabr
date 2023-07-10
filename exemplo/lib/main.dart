@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:kafkabr/kafka.dart';
 
@@ -60,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
 
-      var host = new ContactPoint('192.168.2.25', 9092);
+      var host = new ContactPoint('192.168.0.111', 9092);
       var session = new KafkaSession([host]);
 
       var producer = new Producer(session, 1, 1000);
@@ -70,6 +72,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ]);
       print(result.hasErrors);
       print(result.offsets);
+
+
+      var group = new ConsumerGroup(session, 'consumerGroupName');
+      var topics = {
+        'topicName': <int>{0} // list of partitions to consume from.
+      };
+
+      var consumer = new Consumer(session, group, topics, 100, 1);
+      await for (BatchEnvelope batch in consumer.batchConsume(20)) {
+        batch.items.forEach((MessageEnvelope envelope) {
+          print(envelope.message);
+        });
+        batch.commit('metadata'); // use batch control methods instead of individual messages.
+      }
+      session.close(); // make sure to always close the session when the work is done.
+
       session.close(); // make sure to always close the session when the work is done.
     });
   }
