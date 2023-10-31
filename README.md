@@ -201,7 +201,7 @@ consumer.onOffsetOutOfRange = OffsetOutOfRangeBehavior.throwError;
 
 ## Supported protocol versions
 
-Current version targets version `0.8.2` of the Kafka protocol. There is no plans
+Current version targets version `1.1.0` of the Kafka protocol. There is no plans
 to support earlier versions.
 
 ## License
